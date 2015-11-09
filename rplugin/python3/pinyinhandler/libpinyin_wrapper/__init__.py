@@ -17,7 +17,6 @@ class Libpinyin_Wrapper(object):
         """TODO: to be defined1. """
 
         self.prefixbuf = b''
-        self.senquence = b''
 
         self.libpinyin = ctypes.CDLL("libpinyin.so.6")
         self.context = self.libpinyin.pinyin_init(SYSTEMDIR, USERDIR) # pinyin_context_t

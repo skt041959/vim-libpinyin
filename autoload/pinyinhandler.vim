@@ -29,7 +29,7 @@ function! pinyinhandler#init_variables() abort
     let g:pinyinhandler#_context= {}
 endfunction
 
-function! pinyinhandler#handlers_init() abort "}}}
+function! pinyinhandler#handlers_init() abort "{{{
     augroup pinyin
         autocmd InsertLeave * call s:on_insert_leave()
         autocmd CompleteDone * call s:complete_done()
@@ -52,26 +52,26 @@ function! pinyinhandler#init_context(event) abort "{{{
 endfunction"}}}
 
 function! pinyinhandler#mappings_init() abort "{{{
-  inoremap <silent> <Plug>(pinyinhandler_start_complete)
-        \ <C-r>=pinyinhandler#mappings_do_complete(g:pinyinhandler#_context)<CR>
+    inoremap <silent> <Plug>(pinyinhandler_start_complete)
+                \ <C-r>=pinyinhandler#do_complete(g:pinyinhandler#_context)<CR>
 endfunction "}}}
 
-function! pinyinhandler#mappings_do_complete(context) abort "{{{
-  call pinyinhandler#mappings_set_completeopt()
+function! pinyinhandler#do_complete(context) abort "{{{
+    call pinyinhandler#set_completeopt()
 
-  if b:changedtick == get(a:context, 'changedtick', -1)
-    call complete(a:context.complete_position + 1, a:context.candidates)
-  endif
+    if b:changedtick == get(a:context, 'changedtick', -1)
+        call complete(a:context.complete_position + 1, a:context.candidates)
+    endif
 
-  return ''
+    return ''
 endfunction "}}}
 
-function! pinyinhandler#mappings_set_completeopt() abort "{{{
-  set completeopt-=longest
-  set completeopt+=menuone
-  if &completeopt !~# 'noinsert\|noselect'
-    set completeopt+=noselect
-  endif
+function! pinyinhandler#set_completeopt() abort "{{{
+    set completeopt-=longest
+    set completeopt+=menuone
+    if &completeopt !~# 'noinsert\|noselect'
+        set completeopt+=noselect
+    endif
 endfunction "}}}
 
 function! s:completion_begin(event) abort "{{{
@@ -89,7 +89,7 @@ endfunction "}}}
 
 function! s:on_insert_leave() abort "{{{
     let g:pinyinhandler#_context = {}
-endfunction"}}}
+endfunction "}}}
 
 function! s:complete_done() abort "{{{
     let g:pinyinhandler#_context.position = getpos('.')

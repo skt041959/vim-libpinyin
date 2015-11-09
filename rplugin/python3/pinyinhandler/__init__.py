@@ -3,7 +3,7 @@
 
 import sys
 import neovim
-# import traceback
+import traceback
 from enum import Enum
 
 from pinyinhandler.libpinyin_wrapper import Libpinyin_Wrapper
@@ -29,7 +29,6 @@ class PinyinHandler(object):
         # sys.stderr.writelines([repr(e)+'\n' for e in traceback.extract_stack()])
 
         self.vim = vim
-        self.subs_index = [0, 0]
         self.status = Pinyin_Status.wait
         self.wrapper = None
 
@@ -48,44 +47,35 @@ class PinyinHandler(object):
 
         # sys.stderr.writelines([repr(e)+'\n' for e in traceback.extract_stack()])
 
-        if self.status == Pinyin_Status.wait:
-            self.status = Pinyin_Status.get
-
         error("pinyin_start called")
 
     @neovim.rpc_export('pinyin_track')
-    def pinyin_track(self, args):
+    def pinyin_track(self, context):
 
-        error(__name__+" called "+repr(args))
-        return
+        error("pinyin_track called "+repr(context))
+        try:
+            senquence = context['input'].strip().encode('ascii')
+        except:
+            for line in traceback.format_exc().splitlines():
+                 error(line)
+            return
 
-        char = self.vim.eval("v:char")
+        words = self.wrapper.parse(senquence)
+        error(words)
 
-        sys.stderr.write(char)
-        sys.stderr.flush()
+        var_context = {}
 
-        if self.status == Pinyin_Status.get:
-            if isinstance(char, str):
-                char = char.encode('ascii')
-            if char == b' ':
-                self.status = Pinyin_Status.parse
-                words = self.parse(self.senquence)
-                self.status = Pinyin_Status.candidate
+        if not words or self.vim.eval('mode()') != 'i':
+            self.vim.vars['pinyinhandler#_context'] = var_context
+            return
 
-                sys.stderr.write(repr(words))
-                sys.stderr.flush()
+        var_context['complete_position'] = context['postion'][3]
+        var_context['changedtick'] = context['changedtick']
+        var_context['candidates'] = words
+        self.vim.vars['pinyinhandler#_context'] = var_context
 
-            else:
-                self.senquence+=(char)
-                sys.stderr.write(repr(self.senquence))
-                sys.stderr.flush()
-        elif self.status == Pinyin_Status.candidate:
-            try:
-                index = int(char)
-                sys.stderr.write(repr(index))
-                sys.stderr.flush()
-            except ValueError:
-                self.vim.err_write("entry a index number to select the candidate word")
+        # Note: cannot use vim.feedkeys()
+        self.vim.command('call feedkeys("\<Plug>(pinyinhandler_start_complete)")')
 
     @neovim.function('Cmd1')
     def test_function(self, args):
