@@ -51,8 +51,31 @@ function! pinyinhandler#init_context(event) abort "{{{
                 \ }
 endfunction"}}}
 
+function! pinyinhandler#mappings_init() abort "{{{
+  inoremap <silent> <Plug>(pinyinhandler_start_complete)
+        \ <C-r>=pinyinhandler#mappings_do_complete(g:pinyinhandler#_context)<CR>
+endfunction "}}}
+
+function! pinyinhandler#mappings_do_complete(context) abort "{{{
+  call pinyinhandler#mappings_set_completeopt()
+
+  if b:changedtick == get(a:context, 'changedtick', -1)
+    call complete(a:context.complete_position + 1, a:context.candidates)
+  endif
+
+  return ''
+endfunction "}}}
+
+function! pinyinhandler#mappings_set_completeopt() abort "{{{
+  set completeopt-=longest
+  set completeopt+=menuone
+  if &completeopt !~# 'noinsert\|noselect'
+    set completeopt+=noselect
+  endif
+endfunction "}}}
+
 function! s:completion_begin(event) abort "{{{
-    let context = pinyinhandler#init_context(a:event, [])
+    let context = pinyinhandler#init_context(a:event)
 
     if &paste || context.position ==#
                 \      get(g:pinyinhandler#_context, 'position', [])

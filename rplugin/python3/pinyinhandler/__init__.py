@@ -56,7 +56,8 @@ class PinyinHandler(object):
     @neovim.rpc_export('pinyin_track')
     def pinyin_track(self, args):
 
-        error(__name__+" called")
+        error(__name__+" called "+repr(args))
+        return
 
         char = self.vim.eval("v:char")
 

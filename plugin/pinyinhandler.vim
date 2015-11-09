@@ -4,8 +4,6 @@ if exists('g:loaded_pinyinhandler')
 endif
 let g:loaded_pinyinhandler = 1
 
-command! -nargs=0 -bar PinyinEnable call pinyinhandler#enable()
-
-nnoremap <C-.> :PinyinEnable<CR>
+nnoremap <C-p> :call pinyinhandler#enable()<CR>
 
 " vim: foldmethod=marker
