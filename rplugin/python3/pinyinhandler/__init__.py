@@ -61,7 +61,7 @@ class PinyinHandler(object):
             return
 
         words = self.wrapper.parse(senquence)
-        error(words)
+        error(repr(words))
 
         var_context = {}
 
@@ -69,7 +69,7 @@ class PinyinHandler(object):
             self.vim.vars['pinyinhandler#_context'] = var_context
             return
 
-        var_context['complete_position'] = context['postion'][3]
+        var_context['complete_position'] = context['position'][3]
         var_context['changedtick'] = context['changedtick']
         var_context['candidates'] = words
         self.vim.vars['pinyinhandler#_context'] = var_context

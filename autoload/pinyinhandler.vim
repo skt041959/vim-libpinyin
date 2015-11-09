@@ -59,9 +59,13 @@ endfunction "}}}
 function! pinyinhandler#do_complete(context) abort "{{{
     call pinyinhandler#set_completeopt()
 
-    if b:changedtick == get(a:context, 'changedtick', -1)
-        call complete(a:context.complete_position + 1, a:context.candidates)
-    endif
+    "if b:changedtick == get(a:context, 'changedtick', -1)
+    "    call complete(a:context.complete_position + 1, a:context.candidates)
+    "else
+    "    call pinyinhandler#print_error("fail to complete".str(b:changedtick))
+    "endif
+    call pinyinhandler#print_error("do complete")
+    call complete(a:context.complete_position + 1, a:context.candidates)
 
     return ''
 endfunction "}}}
@@ -116,5 +120,9 @@ function! pinyinhandler#get_input(event) abort "{{{
 
     return input . complete_str
 endfunction "}}}
+
+function! pinyinhandler#print_error(string) "{{{
+    echohl Error | echomsg '[deoplete] ' . a:string | echohl None
+endfunction"}}}
 
 " vim: fdm=marker
